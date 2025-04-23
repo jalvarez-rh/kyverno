@@ -1,0 +1,84 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-kyverno-pre
+  namespace: default
+placementRef:
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+  name: placement-kyverno
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: kyverno-pre
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/description: ""
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: kyverno-pre
+  namespace: default
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: kyverno-pre
+      spec:
+        pruneObjectBehavior: DeleteAll
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: test1
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                test: cat
+              name: pod-1
+              namespace: test1
+            spec:
+              containers:
+              - image: registry.redhat.io/rhel9/httpd-24:latest
+                name: httpd
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                    - ALL
+                  privileged: false
+                  runAsNonRoot: true
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                test: cat
+              name: pod-2
+              namespace: test1
+            spec:
+              containers:
+              - image: registry.redhat.io/rhel9/httpd-24:latest
+                name: httpd
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                    - ALL
+                  privileged: false
+                  runAsNonRoot: true
+        remediationAction: enforce
+        severity: medium
+  remediationAction: enforce

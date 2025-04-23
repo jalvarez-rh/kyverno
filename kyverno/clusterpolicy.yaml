@@ -1,0 +1,101 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-kyverno-clusterpolicy-[ID]
+  namespace: default
+placementRef:
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+  name: placement-kyverno
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: kyverno-clusterpolicy-[ID]
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/description: ""
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: kyverno-clusterpolicy-[ID]
+  namespace: default
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: kyverno-clusterpolicy-[ID]
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: kyverno.io/v1
+            kind: ClusterPolicy
+            metadata:
+              annotations:
+                policies.kyverno.io/severity: medium
+                policies.kyverno.io/title: Require Owner Labels
+              name: require-owner-labels
+            spec:
+              background: true
+              rules:
+              - match:
+                  any:
+                  - resources:
+                      kinds:
+                      - Route
+                name: require-labels
+                validate:
+                  message: The label owner is required
+                  pattern:
+                    metadata:
+                      labels:
+                        owner: ?*
+              validationFailureAction: Audit
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: kyverno.io/v1
+            kind: Policy
+            metadata:
+              annotations:
+                policies.kyverno.io/severity: critical
+                policies.kyverno.io/title: Require team friend Label
+              name: require-team-friend-label
+              namespace: test1
+            spec:
+              background: true
+              rules:
+              - match:
+                  any:
+                  - resources:
+                      kinds:
+                      - Pod
+                name: require-team-label
+                validate:
+                  message: The label team is required.
+                  pattern:
+                    metadata:
+                      labels:
+                        team: ?*
+              - match:
+                  any:
+                  - resources:
+                      kinds:
+                      - Pod
+                name: require-friend-label
+                validate:
+                  message: The label friend is required.
+                  pattern:
+                    metadata:
+                      labels:
+                        friend: ?*
+              validationFailureAction: Audit
+        remediationAction: enforce
+        severity: medium
+        pruneObjectBehavior: DeleteAll
+

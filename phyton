@@ -1,0 +1,65 @@
+#1 Using an f-string (the f before the quotes and {name} in curly braces) is the easiest way to insert the variable seamlessly
+
+# The Code #
+
+name = input("Enter your name: ")
+print(f"Hi {name}, welcome to AP CSP!")
+
+
+#2 This script asks the user for the three inputs, converts the percentages into decimals by dividing by 100, and formats the final output to display as currency with two decimal places.
+
+# How it works
+
+# float() is used instead of int() so the program can handle decimals (like $15.50 or an 8.5% tax rate).
+# :.2f inside the f-strings tells Python to format the number as a float with exactly two decimal places, which makes it look like proper currency.
+
+# The Code #
+
+# Ask the user for the meal cost, tax rate, and tip rate
+meal_cost = float(input("Enter the total cost of the meal: "))
+tax_rate = float(input("Enter the tax rate (as a %): "))
+tip_rate = float(input("Enter the tip rate (as a %): "))
+
+# Calculate the tax and tip amounts
+# Dividing by 100 converts the percentage input (e.g., 7) into a decimal (0.07)
+tax_amount = meal_cost * (tax_rate / 100)
+tip_amount = meal_cost * (tip_rate / 100) # Tip is calculated on the pre-tax cost
+
+# Calculate the combined total
+total_cost = meal_cost + tax_amount + tip_amount
+
+# Print the results, formatted to 2 decimal places
+print(f"Cost of the meal: ${meal_cost:.2f}")
+print(f"Total tax: ${tax_amount:.2f}")
+print(f"Total tip: ${tip_amount:.2f}")
+print(f"Combined total: ${total_cost:.2f}")
+
+# 3 There are two ways to solve this, pick one depending on what they have teach you in Class otherwise it be very obivious I show you how to do it. 
+
+# This script uses three separate variables to store the names, and then simply prints them out in the reverse order from how they were entered 
+
+# The Code #
+
+# Ask the user for three names
+name1 = input("Enter the first name: ")
+name2 = input("Enter the second name: ")
+name3 = input("Enter the third name: ")
+
+# Print the names in reverse order
+print("The names in reverse order are:")
+print(name3)
+print(name2)
+print(name1)
+
+# Alternative Code #
+
+# Not Sure If your class has already covered lists, you can also do it this way, which is a bit more efficient if you needed to handle a lot of names:
+
+names = []
+names.append(input("Enter the first name: "))
+names.append(input("Enter the second name: "))
+names.append(input("Enter the third name: "))
+
+print("The names in reverse order are:")
+for name in reversed(names):
+    print(name)
